@@ -166,6 +166,54 @@ def dispatch(app, request):
         from .processing.crosscheck import PairedChannels
 
         return PairedChannels(app.reports, app.catalog.registry()).compare(**options)
+    if action == "pt_plan":
+        return app.proficiency.plan(options["plan"])
+    if action == "pt_open":
+        return app.proficiency.open(options["id"], options["revision"])
+    if action == "pt_round":
+        return app.proficiency.get(options["id"])
+    if action == "pt_submit":
+        return app.proficiency.submit(options["submission"])
+    if action == "pt_withdraw":
+        return app.proficiency.withdraw(options["id"], options["submission"], options["reason"])
+    if action == "pt_close":
+        return app.proficiency.close(options["id"], options["revision"])
+    if action == "pt_reopen":
+        return app.proficiency.reopen(
+            options["id"],
+            options["revision"],
+            options["administrator"],
+            options["reason"],
+        )
+    if action == "pt_reference":
+        return app.proficiency.change_reference(
+            options["id"],
+            options["measurand"],
+            options["reference"],
+            options["revision"],
+            options["administrator"],
+            options["reason"],
+        )
+    if action == "pt_submissions":
+        return app.proficiency.submissions(options["id"], options.get("laboratory"))
+    if action == "pt_score":
+        return app.proficiency_review.score(options["id"])
+    if action == "pt_versions":
+        return app.proficiency_review.versions(options["id"])
+    if action == "pt_lab_report":
+        return app.proficiency_review.lab_report(
+            options["id"], options["laboratory"], options.get("version")
+        )
+    if action == "pt_review":
+        return app.proficiency_review.review(options["id"], options.get("version"))
+    if action == "pt_export":
+        return app.proficiency_review.export(
+            options["id"], options["destination"], options.get("version")
+        )
+    if action == "pt_verify_export":
+        from .proficiency.review import verify_export as verify_pt_export
+
+        return verify_pt_export(options["file"])
     raise InputError("unknown action", field=action)
 
 
